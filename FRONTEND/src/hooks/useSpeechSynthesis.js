@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 export const useSpeechSynthesis = (isMobile) => {
   const [speechInitialized, setSpeechInitialized] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   // Initialize speech synthesis on component mount
   useEffect(() => {
@@ -19,6 +20,7 @@ export const useSpeechSynthesis = (isMobile) => {
             const handleMobileInit = () => {
               window.speechSynthesis.speak(silentUtterance);
               setSpeechInitialized(true);
+              setUserInteracted(true);
               console.log("Speech synthesis initialized on mobile");
               document.removeEventListener('touchstart', handleMobileInit);
               document.removeEventListener('click', handleMobileInit);
@@ -30,6 +32,7 @@ export const useSpeechSynthesis = (isMobile) => {
             // For desktop, initialize immediately
             window.speechSynthesis.speak(silentUtterance);
             setSpeechInitialized(true);
+            setUserInteracted(true);
             console.log("Speech synthesis initialized");
           }
         } catch (error) {
@@ -69,6 +72,22 @@ export const useSpeechSynthesis = (isMobile) => {
 
     if (!("speechSynthesis" in window)) {
       console.error("SpeechSynthesis not supported in this browser");
+      return;
+    }
+
+    // On mobile, check if user has interacted first
+    if (isMobile && !userInteracted) {
+      console.log("🔇 Speech blocked: waiting for user interaction on mobile");
+      // Wait for user interaction before speaking
+      const handleInteraction = () => {
+        setUserInteracted(true);
+        document.removeEventListener('touchstart', handleInteraction);
+        document.removeEventListener('click', handleInteraction);
+        // Now speak after interaction
+        speak(text, onEnd);
+      };
+      document.addEventListener('touchstart', handleInteraction, { once: true });
+      document.addEventListener('click', handleInteraction, { once: true });
       return;
     }
 
@@ -171,5 +190,5 @@ export const useSpeechSynthesis = (isMobile) => {
     }
   };
 
-  return { speechInitialized, speak };
+  return { speechInitialized, userInteracted, speak };
 };

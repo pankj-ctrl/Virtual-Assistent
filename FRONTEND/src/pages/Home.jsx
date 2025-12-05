@@ -32,7 +32,7 @@ function Home() {
   const cache = useRef(new Map());
 
   // Speech synthesis hook
-  const { speechInitialized, speak } = useSpeechSynthesis(isMobile);
+  const { speechInitialized, userInteracted, speak } = useSpeechSynthesis(isMobile);
 
   // Speech recognition hook
   const { startMobileListening } = useSpeechRecognition(
@@ -52,13 +52,17 @@ function Home() {
   // Update status based on mobile detection
   useEffect(() => {
     if (isMobile && isListeningEnabled) {
-      setStatus("Tap to speak");
+      if (!userInteracted) {
+        setStatus("Tap to activate voice");
+      } else {
+        setStatus("Tap to speak");
+      }
     } else if (!isMobile && isListeningEnabled) {
       setStatus("Listening...");
     } else {
       setStatus("Listening Disabled");
     }
-  }, [isMobile, isListeningEnabled]);
+  }, [isMobile, isListeningEnabled, userInteracted]);
 
   // Auto-enable sound when user data is loaded
   useEffect(() => {
@@ -155,7 +159,7 @@ function Home() {
       {aiText && <img src={aiImg} className="w-[200px]" />}
 
       <p className="text-white text-[14px] md:text-[16px]">{isListeningEnabled ? status : "Listening Disabled"}</p>
-      {isMobile && !speechInitialized && (
+      {isMobile && !userInteracted && (
         <p className="text-yellow-300 text-[12px] md:text-[14px] text-center max-w-[300px]">
           💡 Tap anywhere on the screen first to enable voice features
         </p>
