@@ -12,7 +12,7 @@ const app = express();
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || origin.startsWith('http://localhost:')) {
+        if (!origin || origin.startsWith('https://virtual-assistent-myv3.onrender.com')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
