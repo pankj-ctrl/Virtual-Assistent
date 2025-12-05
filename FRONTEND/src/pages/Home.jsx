@@ -32,18 +32,35 @@ function Home() {
           // Create a silent utterance to initialize
           const silentUtterance = new SpeechSynthesisUtterance("");
           silentUtterance.volume = 0.01; // Very quiet
-          window.speechSynthesis.speak(silentUtterance);
-          setSpeechInitialized(true);
-          console.log("Speech synthesis initialized");
+          
+          // On mobile, we need to be more careful with initialization
+          if (isMobile) {
+            // For mobile, wait for user interaction before initializing
+            const handleMobileInit = () => {
+              window.speechSynthesis.speak(silentUtterance);
+              setSpeechInitialized(true);
+              console.log("Speech synthesis initialized on mobile");
+              document.removeEventListener('touchstart', handleMobileInit);
+              document.removeEventListener('click', handleMobileInit);
+            };
+            
+            document.addEventListener('touchstart', handleMobileInit, { once: true });
+            document.addEventListener('click', handleMobileInit, { once: true });
+          } else {
+            // For desktop, initialize immediately
+            window.speechSynthesis.speak(silentUtterance);
+            setSpeechInitialized(true);
+            console.log("Speech synthesis initialized");
+          }
         } catch (error) {
           console.log("Speech initialization failed:", error);
         }
       };
 
-      // Initialize immediately
+      // Initialize immediately (will handle mobile differently)
       initSpeech();
 
-      // Also try on first user interaction
+      // Also try on first user interaction (backup for desktop)
       const handleFirstInteraction = () => {
         if (!speechInitialized) {
           initSpeech();
@@ -52,15 +69,17 @@ function Home() {
         document.removeEventListener('keydown', handleFirstInteraction);
       };
 
-      document.addEventListener('click', handleFirstInteraction);
-      document.addEventListener('keydown', handleFirstInteraction);
+      if (!isMobile) {
+        document.addEventListener('click', handleFirstInteraction);
+        document.addEventListener('keydown', handleFirstInteraction);
+      }
 
       return () => {
         document.removeEventListener('click', handleFirstInteraction);
         document.removeEventListener('keydown', handleFirstInteraction);
       };
     }
-  }, []);
+  }, [isMobile, speechInitialized]);
 
   // Detect mobile device
   useEffect(() => {
@@ -112,10 +131,19 @@ function Home() {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "hi-IN";
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
+    
+    // Use different language settings for mobile vs desktop
+    if (isMobile) {
+      utterance.lang = "en-US"; // Use English on mobile for better compatibility
+      utterance.rate = 0.9; // Slightly slower for mobile
+      utterance.pitch = 1;
+      utterance.volume = 1;
+    } else {
+      utterance.lang = "hi-IN"; // Use Hindi on desktop
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+    }
 
     // Ensure voices are loaded
     let voices = window.speechSynthesis.getVoices();
@@ -130,14 +158,29 @@ function Home() {
     }
 
     function selectVoice() {
-      const hindiVoice = voices.find(
-        (voice) =>
-          voice.lang.startsWith("hi") ||
-          voice.name.toLowerCase().includes("hindi") ||
-          voice.lang === "hi-IN"
-      );
-      if (hindiVoice) {
-        utterance.voice = hindiVoice;
+      if (isMobile) {
+        // On mobile, prefer English voices for better compatibility
+        const englishVoice = voices.find(
+          (voice) =>
+            voice.lang.startsWith("en") &&
+            (voice.name.toLowerCase().includes("english") ||
+             voice.name.toLowerCase().includes("us") ||
+             voice.lang === "en-US")
+        );
+        if (englishVoice) {
+          utterance.voice = englishVoice;
+        }
+      } else {
+        // On desktop, try Hindi voices
+        const hindiVoice = voices.find(
+          (voice) =>
+            voice.lang.startsWith("hi") ||
+            voice.name.toLowerCase().includes("hindi") ||
+            voice.lang === "hi-IN"
+        );
+        if (hindiVoice) {
+          utterance.voice = hindiVoice;
+        }
       }
     }
 
@@ -146,7 +189,18 @@ function Home() {
       setAiText("");
       if (onEnd) onEnd();
     };
-    utterance.onerror = (e) => console.error("❌ Speech error", e);
+    utterance.onerror = (e) => {
+      console.error("❌ Speech error", e);
+      // On mobile, if speech fails, try with default settings
+      if (isMobile && e.error !== 'not-allowed') {
+        console.log("Retrying speech with default settings...");
+        const fallbackUtterance = new SpeechSynthesisUtterance(text);
+        fallbackUtterance.lang = "en-US";
+        fallbackUtterance.rate = 0.8;
+        fallbackUtterance.volume = 0.8;
+        window.speechSynthesis.speak(fallbackUtterance);
+      }
+    };
 
     window.speechSynthesis.speak(utterance);
   };
@@ -414,10 +468,28 @@ function Home() {
       {aiText && <img src={aiImg} className="w-[200px]" />}
 
       <p className="text-white text-[14px] md:text-[16px]">{isListeningEnabled ? status : "Listening Disabled"}</p>
+      {isMobile && !speechInitialized && (
+        <p className="text-yellow-300 text-[12px] md:text-[14px] text-center max-w-[300px]">
+          💡 Tap anywhere on the screen first to enable voice features
+        </p>
+      )}
       {isMobile && isListeningEnabled && (
         <button
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
           onClick={() => {
+            // Ensure speech synthesis is initialized on mobile
+            if (!speechInitialized && isMobile) {
+              try {
+                const silentUtterance = new SpeechSynthesisUtterance("");
+                silentUtterance.volume = 0.01;
+                window.speechSynthesis.speak(silentUtterance);
+                setSpeechInitialized(true);
+                console.log("Speech synthesis initialized via tap");
+              } catch (error) {
+                console.log("Speech initialization via tap failed:", error);
+              }
+            }
+            
             // Manual start for mobile devices
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
