@@ -4,6 +4,7 @@ export const useSpeechRecognition = (
   isMobile,
   isListeningEnabled,
   userData,
+  getGrokResponse,
   setStatus,
   setUserText,
   setAiText,
@@ -12,6 +13,14 @@ export const useSpeechRecognition = (
   speechInitialized,
   setSpeechInitialized
 ) => {
+  // Debug logging
+  console.log("useSpeechRecognition params:", {
+    isMobile,
+    isListeningEnabled,
+    userData: !!userData,
+    getGrokResponse: typeof getGrokResponse,
+    hasUserData: !!userData
+  });
 
   // Auto-enable sound when user data is loaded
   useEffect(() => {
@@ -62,7 +71,8 @@ export const useSpeechRecognition = (
               setAiText("");
               setUserText(transcript);
               console.log("🤖 Getting AI response for:", transcript);
-              const data = await userData.getGrokResponse(transcript);
+              console.log("🤖 getGrokResponse function:", typeof getGrokResponse, getGrokResponse);
+              const data = await getGrokResponse(transcript);
               console.log("🤖 AI response received:", data.response.substring(0, 50) + "...");
               setAiText(data.response);
               setUserText("");
@@ -170,7 +180,7 @@ export const useSpeechRecognition = (
                 setAiText("");
                 setUserText(transcript);
                 console.log("🤖 Getting AI response for:", transcript);
-                const data = await userData.getGrokResponse(transcript);
+                const data = await getGrokResponse(transcript);
                 console.log("🤖 AI response received:", data.response.substring(0, 50) + "...");
                 setAiText(data.response);
                 setUserText("");

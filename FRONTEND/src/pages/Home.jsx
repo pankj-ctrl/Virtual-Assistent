@@ -39,6 +39,7 @@ function Home() {
     isMobile,
     isListeningEnabled,
     userData,
+    getGrokResponse, // Ensure getGrokResponse is passed correctly
     setStatus,
     setUserText,
     setAiText,
