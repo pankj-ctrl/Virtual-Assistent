@@ -11,14 +11,14 @@ function Home() {
   const { userData, serverUrl, setUserData, getGrokResponse } =
     useContext(userDataContext);
   const navigate = useNavigate();
-  const [status, setStatus] = useState(isMobile ? "Tap to speak" : "Listening...");
+  const [isMobile, setIsMobile] = useState(false);
+  const [status, setStatus] = useState("Listening...");
   const [userText, setUserText] = useState("");
   const [aiText, setAiText] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isListeningEnabled, setIsListeningEnabled] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [speechInitialized, setSpeechInitialized] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [manualStart, setManualStart] = useState(false);
 
   const cache = useRef(new Map());
