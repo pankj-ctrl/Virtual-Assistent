@@ -16,6 +16,7 @@ function Home() {
   const [aiText, setAiText] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isListeningEnabled, setIsListeningEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
 
   const cache = useRef(new Map());
 
@@ -163,6 +164,18 @@ function Home() {
     }
   };
 
+  // Auto-enable sound when user data is loaded
+  useEffect(() => {
+    if (userData && userData.assistantName && !soundEnabled) {
+      setSoundEnabled(true);
+      // Small delay to ensure speech synthesis is ready
+      setTimeout(() => {
+        const welcomeMessage = `Hello! I am ${userData.assistantName}. Voice enabled. How can I help you?`;
+        speak(welcomeMessage);
+      }, 1000);
+    }
+  }, [userData, soundEnabled]);
+
   useEffect(() => {
     if (!userData || !userData.assistantName || !isListeningEnabled) return;
 
@@ -301,12 +314,11 @@ function Home() {
         <button
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
           onClick={() => {
-            const u = new SpeechSynthesisUtterance("Voice enabled");
+            const u = new SpeechSynthesisUtterance("Voice is already enabled and working!");
             window.speechSynthesis.speak(u);
-            alert("Voice Enabled. Now assistant will speak.");
           }}
         >
-          🔊 Enable Sound
+          🔊 Sound Active
         </button>
         <button
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
