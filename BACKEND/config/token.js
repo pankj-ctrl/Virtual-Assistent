@@ -1,0 +1,16 @@
+import jwt from "jsonwebtoken";
+
+const gentToken = async (userId) => {
+  try {
+    const token = await jwt.sign(
+      { userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "10d" }
+    );
+    return token;
+  } catch (error) {
+    console.log("Token generation error:", error);
+  }
+};
+
+export default gentToken;
