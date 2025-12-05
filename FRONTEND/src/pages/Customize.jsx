@@ -7,7 +7,7 @@ import img5 from "../assets/img5.png"
 import img6 from "../assets/auth5.png"
 import Card from "../components/Card.jsx";
 import { RiImageAddLine } from "react-icons/ri";
-import { userDataContext } from "../context/userContext";
+import { userDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
 
