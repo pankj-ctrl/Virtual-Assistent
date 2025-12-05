@@ -88,7 +88,7 @@ function SignIn() {
 
         <input
           type="email"
-          placeholder="Email (Gmail only)"
+          placeholder="Email"
           className={`w-full h-[50px] md:h-[60px] outline-none border-2 bg-transparent text-white placeholder-gray-300 px-[20px] py-[10px] md:py-[15px] rounded-full text-[16px] md:text-[18px] mb-[10px] md:mb-[15px] transition-all duration-300 ${
             emailError ? 'border-red-400 bg-red-900/10' : 'border-white'
           }`}
