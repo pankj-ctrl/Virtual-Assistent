@@ -84,7 +84,6 @@ function Home() {
       return;
     }
 
-    // Cancel any ongoing speech
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
@@ -117,40 +116,14 @@ function Home() {
       }
     }
 
-    utterance.onstart = () => {
-      console.log("🔊 Speaking started:", text.substring(0, 50) + "...");
-      setSpeechInitialized(true);
-    };
+    utterance.onstart = () => console.log("🔊 Speaking started");
     utterance.onend = () => {
-      console.log("🔊 Speaking ended");
       setAiText("");
       if (onEnd) onEnd();
     };
-    utterance.onerror = (e) => {
-      console.error("❌ Speech error:", e);
-      // Try to reinitialize on error
-      setTimeout(() => {
-        if ("speechSynthesis" in window) {
-          const silentUtterance = new SpeechSynthesisUtterance("");
-          silentUtterance.volume = 0.01;
-          window.speechSynthesis.speak(silentUtterance);
-        }
-      }, 1000);
-    };
+    utterance.onerror = (e) => console.error("❌ Speech error", e);
 
-    try {
-      window.speechSynthesis.speak(utterance);
-    } catch (error) {
-      console.error("Failed to speak:", error);
-      // Fallback: try again after a short delay
-      setTimeout(() => {
-        try {
-          window.speechSynthesis.speak(utterance);
-        } catch (retryError) {
-          console.error("Retry speak also failed:", retryError);
-        }
-      }, 500);
-    }
+    window.speechSynthesis.speak(utterance);
   };
 
   const handleCommand = (data) => {
@@ -235,39 +208,13 @@ function Home() {
   useEffect(() => {
     if (userData && userData.assistantName && !soundEnabled) {
       setSoundEnabled(true);
-
-      const speakWelcome = () => {
+      // Small delay to ensure speech synthesis is ready
+      setTimeout(() => {
         const welcomeMessage = `Hello! I am ${userData.assistantName}. Voice enabled. How can I help you?`;
         speak(welcomeMessage);
-      };
-
-      // Try to speak immediately
-      if (speechInitialized) {
-        speakWelcome();
-      } else {
-        // Wait for speech initialization or user interaction
-        const timer = setTimeout(() => {
-          speakWelcome();
-        }, 500);
-
-        // Also try on first click if speech not initialized
-        const handleWelcomeClick = () => {
-          if (!soundEnabled) {
-            speakWelcome();
-            setSoundEnabled(true);
-          }
-          document.removeEventListener('click', handleWelcomeClick);
-        };
-
-        document.addEventListener('click', handleWelcomeClick);
-
-        return () => {
-          clearTimeout(timer);
-          document.removeEventListener('click', handleWelcomeClick);
-        };
-      }
+      }, 1000);
     }
-  }, [userData, soundEnabled, speechInitialized]);
+  }, [userData, soundEnabled]);
 
   useEffect(() => {
     if (!userData || !userData.assistantName || !isListeningEnabled) return;
@@ -303,18 +250,6 @@ function Home() {
           ) {
             isProcessing = true;
             setStatus("Processing...");
-
-            // Ensure speech synthesis is initialized when user speaks
-            if (!speechInitialized && "speechSynthesis" in window) {
-              try {
-                const silentUtterance = new SpeechSynthesisUtterance("");
-                silentUtterance.volume = 0.01;
-                window.speechSynthesis.speak(silentUtterance);
-                setSpeechInitialized(true);
-              } catch (error) {
-                console.log("Speech initialization on user input failed:", error);
-              }
-            }
 
             const normalizedTranscript = transcript.toLowerCase().trim();
             if (cache.current.has(normalizedTranscript)) {
@@ -419,13 +354,11 @@ function Home() {
         <button
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
           onClick={() => {
-            const testMessage = speechInitialized
-              ? "Voice is working perfectly!"
-              : "Initializing voice system...";
-            speak(testMessage);
+            const u = new SpeechSynthesisUtterance("Voice is already enabled and working!");
+            window.speechSynthesis.speak(u);
           }}
         >
-          🔊 {speechInitialized ? "Sound Active" : "Initializing..."}
+          🔊 Sound Active
         </button>
         <button
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
