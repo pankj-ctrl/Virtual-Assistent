@@ -14,11 +14,38 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  // Gmail validation function
+  const validateGmail = (email) => {
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return gmailRegex.test(email);
+  };
+
+  // Handle email input change with validation
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    if (value && !validateGmail(value)) {
+      setEmailError("Please enter a valid Gmail address (e.g., example@gmail.com)");
+    } else {
+      setEmailError("");
+    }
+  };
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // Validate Gmail before submission
+    if (!validateGmail(email)) {
+      setEmailError("Please enter a valid Gmail address");
+      setLoading(false);
+      return;
+    }
+
     try {
       let result = await axios.post(
         `${serverUrl}/api/auth/signin`,
@@ -61,12 +88,20 @@ function SignIn() {
 
         <input
           type="email"
-          placeholder="Email"
-          className="w-full h-[50px] md:h-[60px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-300 px-[20px] py-[10px] md:py-[15px] rounded-full text-[16px] md:text-[18px] mb-[10px] md:mb-[15px]"
+          placeholder="Email (Gmail only)"
+          className={`w-full h-[50px] md:h-[60px] outline-none border-2 bg-transparent text-white placeholder-gray-300 px-[20px] py-[10px] md:py-[15px] rounded-full text-[16px] md:text-[18px] mb-[10px] md:mb-[15px] transition-all duration-300 ${
+            emailError ? 'border-red-400 bg-red-900/10' : 'border-white'
+          }`}
           required
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           value={email}
         />
+
+        {emailError && (
+          <p className="text-red-400 text-center bg-red-900/20 p-2 rounded-lg w-full text-sm mb-[10px]">
+            {emailError}
+          </p>
+        )}
 
         <div className="w-full h-[50px] md:h-[60px] border-2 border-white bg-transparent text-white rounded-full text-[16px] md:text-[18px] mb-[10px] md:mb-[15px] relative">
           <input
