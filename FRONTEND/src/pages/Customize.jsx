@@ -82,7 +82,7 @@ function Customize(){
                   className="w-full max-w-[300px] h-[50px] md:h-[60px] text-white font-semibold bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 rounded-xl text-[16px] md:text-[19px] cursor-pointer shadow-lg hover:shadow-green-500/25 transform hover:scale-[1.02] transition-all duration-300 border border-green-400/20 hover:border-green-400/40" 
                   onClick={() => navigate("/customize2")}
                 >
-                  🎯 Next Step
+                  Next Step
                 </button>
               )}
             </div>

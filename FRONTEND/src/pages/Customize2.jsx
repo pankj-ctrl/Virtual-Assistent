@@ -97,7 +97,7 @@ function Customize2(){
                   handleUpdateAssistant()
                 }}
               >
-                { !loading ? "🚀 Finally Create Your Assistant" : "⏳ Loading..."}
+                { !loading ? "Finally Create Your Assistant" : "⏳ Loading..."}
               </button>
             )}
           </div>
