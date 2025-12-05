@@ -1,6 +1,5 @@
 export const handleCommand = (data, speak, setStatus, isMobile) => {
   const { type, userInput, response } = data;
-  console.log("🎯 handleCommand called with:", { type, userInput, response: response.substring(0, 50) + "..." });
   setStatus("Answering");
   speak(response, () => setStatus(isMobile ? "Tap to speak" : "Listening..."));
 

@@ -58,9 +58,6 @@ function Customize2(){
         }
 
       } catch (error) {
-        console.log("Error response:", error.response?.data)
-        console.log("Error status:", error.response?.status)
-        console.log(error)
       }
     }
 

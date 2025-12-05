@@ -21,7 +21,6 @@ export const useSpeechSynthesis = (isMobile) => {
               window.speechSynthesis.speak(silentUtterance);
               setSpeechInitialized(true);
               setUserInteracted(true);
-              console.log("Speech synthesis initialized on mobile");
               document.removeEventListener('touchstart', handleMobileInit);
               document.removeEventListener('click', handleMobileInit);
             };
@@ -33,10 +32,8 @@ export const useSpeechSynthesis = (isMobile) => {
             window.speechSynthesis.speak(silentUtterance);
             setSpeechInitialized(true);
             setUserInteracted(true);
-            console.log("Speech synthesis initialized");
           }
         } catch (error) {
-          console.log("Speech initialization failed:", error);
         }
       };
 
@@ -77,7 +74,6 @@ export const useSpeechSynthesis = (isMobile) => {
 
     // On mobile, check if user has interacted first
     if (isMobile && !userInteracted) {
-      console.log("🔇 Speech blocked: waiting for user interaction on mobile");
       // Wait for user interaction before speaking
       const handleInteraction = () => {
         setUserInteracted(true);
@@ -104,14 +100,11 @@ export const useSpeechSynthesis = (isMobile) => {
 
     // For mobile, try to speak immediately without waiting for voices
     if (isMobile) {
-      console.log("🎤 Attempting to speak on mobile:", text.substring(0, 50) + "...");
 
       utterance.onstart = () => {
-        console.log("🔊 Mobile speech started successfully");
       };
 
       utterance.onend = () => {
-        console.log("🔊 Mobile speech ended");
         if (onEnd) onEnd();
       };
 
@@ -120,16 +113,14 @@ export const useSpeechSynthesis = (isMobile) => {
 
         // Try fallback with default voice
         if (e.error !== 'not-allowed') {
-          console.log("Retrying mobile speech with fallback...");
           const fallbackUtterance = new SpeechSynthesisUtterance(text);
           fallbackUtterance.lang = "en-US";
           fallbackUtterance.rate = 0.8;
           fallbackUtterance.volume = 0.8;
           fallbackUtterance.pitch = 1;
 
-          fallbackUtterance.onstart = () => console.log("🔊 Fallback speech started");
+          fallbackUtterance.onstart = () => {};
           fallbackUtterance.onend = () => {
-            console.log("🔊 Fallback speech ended");
             if (onEnd) onEnd();
           };
           fallbackUtterance.onerror = (e2) => {
@@ -180,7 +171,7 @@ export const useSpeechSynthesis = (isMobile) => {
         selectVoice();
       }
 
-      utterance.onstart = () => console.log("🔊 Speaking started");
+      utterance.onstart = () => {};
       utterance.onend = () => {
         if (onEnd) onEnd();
       };

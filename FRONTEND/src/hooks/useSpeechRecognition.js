@@ -13,21 +13,11 @@ export const useSpeechRecognition = (
   speechInitialized,
   setSpeechInitialized
 ) => {
-  // Debug logging
-  console.log("useSpeechRecognition params:", {
-    isMobile,
-    isListeningEnabled,
-    userData: !!userData,
-    getGrokResponse: typeof getGrokResponse,
-    hasUserData: !!userData
-  });
-
   // Auto-enable sound when user data is loaded
   useEffect(() => {
     if (userData && userData.assistantName && !isListeningEnabled) {
       // Small delay to ensure speech synthesis is ready
       setTimeout(() => {
-        console.log("Sound enabled for assistant:", userData.assistantName);
       }, 1000);
     }
   }, [userData, isListeningEnabled]);
@@ -70,10 +60,7 @@ export const useSpeechRecognition = (
             try {
               setAiText("");
               setUserText(transcript);
-              console.log("🤖 Getting AI response for:", transcript);
-              console.log("🤖 getGrokResponse function:", typeof getGrokResponse, getGrokResponse);
               const data = await getGrokResponse(transcript);
-              console.log("🤖 AI response received:", data.response.substring(0, 50) + "...");
               setAiText(data.response);
               setUserText("");
               handleCommand(data);
@@ -156,9 +143,7 @@ export const useSpeechRecognition = (
         silentUtterance.volume = 0.01;
         window.speechSynthesis.speak(silentUtterance);
         setSpeechInitialized(true);
-        console.log("Speech synthesis initialized via tap");
       } catch (error) {
-        console.log("Speech initialization via tap failed:", error);
       }
     }
 
@@ -179,9 +164,7 @@ export const useSpeechRecognition = (
               try {
                 setAiText("");
                 setUserText(transcript);
-                console.log("🤖 Getting AI response for:", transcript);
                 const data = await getGrokResponse(transcript);
-                console.log("🤖 AI response received:", data.response.substring(0, 50) + "...");
                 setAiText(data.response);
                 setUserText("");
                 handleCommand(data);

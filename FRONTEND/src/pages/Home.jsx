@@ -85,7 +85,6 @@ function Home() {
       navigate("/signin");
     } catch (error) {
       setUserData(null);
-      console.log(error);
     }
   };
 
@@ -123,7 +122,6 @@ function Home() {
             className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-blue-400 to-cyan-500 hover:from-blue-500 hover:to-cyan-600 rounded-full text-[14px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
             onClick={() => {
               speak("Hello! This is a test message to check if speech synthesis works on mobile.", () => {
-                console.log("Test speech completed");
               });
             }}
           >
@@ -169,7 +167,7 @@ function Home() {
           className="w-full max-w-[200px] h-[50px] text-black font-bold bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 rounded-full text-[16px] cursor-pointer shadow-lg transform hover:scale-105 transition-all duration-200"
           onClick={startMobileListening}
         >
-          🎤 Tap to Speak
+        Tap to Speak
         </button>
       )}
       <h1 className="text-white">

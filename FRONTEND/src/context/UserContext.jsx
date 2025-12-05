@@ -29,7 +29,6 @@ function UserContext({ children }) {
     const result= await axios.post(`${serverUrl}/api/user/asktoassistant`,{command},{withCredentials:true})
     return result.data
    } catch (error) {
-     console.log("API Error:", error.response?.data || error.message)
 
      // More specific error messages based on error type
      if (error.response?.status === 429) {

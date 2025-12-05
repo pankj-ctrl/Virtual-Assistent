@@ -56,7 +56,6 @@ function SignIn() {
       navigate("/")
       
     } catch (error) {
-      console.log("Login error:", error);
       setUserData(null)
       setError(
         error.response?.data?.message || "Login failed. Please try again."

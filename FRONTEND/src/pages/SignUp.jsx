@@ -58,7 +58,6 @@ function SignUp() {
       setLoading(false);
       navigate("/customize")
     } catch (error) {
-      console.log(error);
       setUserData(null)
       setErr(error.response.data.message);
       setLoading(false);
