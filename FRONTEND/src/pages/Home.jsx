@@ -64,18 +64,6 @@ function Home() {
     }
   }, [isMobile, isListeningEnabled, userInteracted]);
 
-  // Auto-enable sound when user data is loaded
-  useEffect(() => {
-    if (userData && userData.assistantName && !soundEnabled) {
-      setSoundEnabled(true);
-      // Small delay to ensure speech synthesis is ready
-      setTimeout(() => {
-        const welcomeMessage = `Hello! I am ${userData.assistantName}. Voice enabled. How can I help you?`;
-        speak(welcomeMessage);
-      }, 1000);
-    }
-  }, [userData, soundEnabled, speak]);
-
   const handleLogout = async () => {
     try {
       const result = await axios.get(`${serverUrl}/api/auth/logout`, {
