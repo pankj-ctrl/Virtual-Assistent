@@ -23,12 +23,17 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
     const query = encodeURIComponent(userInput);
     window.open(`https://www.google.com`, "_blank");
   }
-  
+
    if (type === "open_vscode") {
     window.location.href = "vscode:";
   }
-  if (type === "calculator_open") {
-    window.open(`https://www.google.com/search?q=calculator`, "_blank");
+  if (type === "open_calculator") {
+    // Note: Ye har browser par kaam nahi karta, isliye backup mein Google Calc
+    try {
+        window.location.href = "ms-calculator:";
+    } catch (e) {
+        window.open(`https://www.google.com/search?q=calculator`, "_blank");
+    }
   }
 
   if (type === "instagram_open") {
