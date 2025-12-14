@@ -82,6 +82,15 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
     if (type === "open_settings") {
       window.location.href = "ms-settings:";
     }
+    if (type === "open_vscode") {
+    window.location.href = "vscode:";
+    if (type === "open_email") {
+    window.location.href = "mailto:";
+  }
+  if (type === "open_zoom") {
+    window.location.href = "zoommtg:";
+  }
+  }
   }
 
   // ---------------------------------------------------------
