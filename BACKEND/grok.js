@@ -40,6 +40,12 @@ Type meanings:
 - "get_day": if user asks what day it is.
 - "get_month": if user asks for the current month.
 - "open_vscode": if user want to vscode. ya visual studio code
+- "open_edge": if user want open microsoft edge. and if user say open brower
+- "open_camera": if user want open camara.
+- "open_clock": if user asks for open the clock
+- "open_photos": if user asks for open photos
+- "open_settings": if user asks for open setting
+- "open_whatsapp": if user wants for open whatsapp
   Important:
 - Use ${userName} agar koi puche tune kisne banaya.
 - use ${userName} agar koi puche mai kon hu. or mera naam kya hai.ok

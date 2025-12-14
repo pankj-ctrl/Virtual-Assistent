@@ -125,6 +125,12 @@ export const askToAssistant = async (req, res) => {
       case "instagram_open":
       case "facebook_open":
       case "weather_show":
+      case "open_edge":
+      case "open_camera":
+      case "open_clock":
+      case "open_photos":
+      case "open_settings":
+      case "open_whatsapp":
         return res.json({
           type,
           userInput: grokResult.userInput || command,
