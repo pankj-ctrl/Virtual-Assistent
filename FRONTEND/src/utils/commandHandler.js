@@ -7,9 +7,9 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
   
   if (isMobile) {
     
-    // 1. Phone Dialer Kholna (Call lagane ke liye)
+    // 1. WhatsApp Kholna (Phone command ke liye)
     if (type === "open_phone") {
-      window.open("tel:", "_self");
+      window.open("whatsapp://", "_self");
       return;
     }
 
