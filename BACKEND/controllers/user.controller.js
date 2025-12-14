@@ -117,12 +117,13 @@ export const askToAssistant = async (req, res) => {
       case "youtube_play":
       case "google_search":
       case "open_youtube":
+      case "open_google":
+      case "open_vscode":
+      case "open_calculator":
       case "general":
       case "github_search":
-      case "calculator_open":
       case "instagram_open":
       case "facebook_open":
-      case "google_open":
       case "weather_show":
         return res.json({
           type,
