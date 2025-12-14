@@ -39,6 +39,7 @@ Type meanings:
 - "get_date": if user asks for today's date.
 - "get_day": if user asks what day it is.
 - "get_month": if user asks for the current month.
+- "open_vscode": if user want to vscode. ya visual studio code
   Important:
 - Use ${userName} agar koi puche tune kisne banaya.
 - use ${userName} agar koi puche mai kon hu. or mera naam kya hai.ok

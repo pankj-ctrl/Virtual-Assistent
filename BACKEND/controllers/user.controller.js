@@ -14,8 +14,6 @@ export const getCurrentUser = async(req,res)=>{
         }
         
         return res.status(200).json(user)
-       
-
     } catch (error) {
          return res.status(400).json({message:"get current user error"})
     }
