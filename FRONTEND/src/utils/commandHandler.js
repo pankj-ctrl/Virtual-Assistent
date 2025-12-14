@@ -62,7 +62,9 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
       }, 1500);
       return;
     }
-
+    if(type ==="open_calculator"){
+      window.location.href= "ms-calculator:"
+    }
     if (type === "open_edge") {
       window.location.href = "microsoft-edge:https://www.google.com";
     }
@@ -118,6 +120,9 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
   if (type === "open_youtube") {
     window.open("https://www.youtube.com/", "_blank");
   }
+  if (type === "open_google") {
+    window.open("https://www.google.com/", "_blank");
+  }
 
   if (type === "youtube_search") {
     let query = userInput
@@ -138,5 +143,18 @@ export const handleCommand = (data, speak, setStatus, isMobile) => {
       .trim();
     const encoded = encodeURIComponent(query);
     window.open(`https://www.youtube.com/results?search_query=${encoded}`, "_blank");
+  }
+  if(type==="instagram_open"){
+    window.open("https://www.instagram.com/", "_blank");
+  }
+  if (type === "weather_show") {
+
+    window.open(`https://www.google.com/search?q=weather`, "_blank");
+
+  }
+   if (type === "facebook_open") {
+
+    window.open(`https://www.facebook.com/`, "_blank");
+
   }
 };
