@@ -4,7 +4,6 @@ const grokResponse = async (command, assistantName, userName, retryCount = 0) =>
   const maxRetries = 2;
 
   try {
-
     const prompt = `You are a virtual assistant named ${assistantName} created by ${userName}.
 You are not Google. You will now behave like a voice-enabled assistant.
 
@@ -49,35 +48,55 @@ Type meanings:
   Important:
 - Use ${userName} agar koi puche tune kisne banaya.
 - use ${userName} agar koi puche mai kon hu. or mera naam kya hai.ok
-- Only respond with the JSON object, nothing else.
+- You MUST return ONLY a valid JSON object. Do not include markdown formatting like \`\`\`json.
 
 Now produce the JSON for this user input:
 ${command}
 `
     const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-      model: process.env.OPENROUTER_MODEL || "x-ai/grok-4.1-fast",
+      // It's better to use a code model here if possible, like "cohere/command-r"
+      model: process.env.OPENROUTER_MODEL || "openai/gpt-oss-120b:free",
       messages: [
         {
           role: "user",
           content: prompt
         }
       ],
+      // Bhai, reasoning ko false rakho jab JSON chahiye ho, warna model extra text append kar deta hai
       reasoning: {
-        enabled: true
+        enabled: false 
       }
     }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`
       },
-      timeout: 30000 // 30 second timeout
+      timeout: 30000 
     });
 
-    return response.data.choices[0].message.content;
-  } catch (error) {
-    console.error(`Error calling Grok API (attempt ${retryCount + 1}):`, error.response?.data || error.message);
+    let rawResult = response.data.choices[0].message.content;
 
-    // Retry for network errors or 5xx server errors
+    // 1. Agar model sirf safety error bhej de aur usme JSON brackets {} na ho
+    if (rawResult.includes("User Safety: safe") && !rawResult.includes("{")) {
+        return JSON.stringify({
+            type: "general",
+            userinput: command,
+            response: "Mujhe yeh process karne se roka gaya hai due to safety filters."
+        });
+    }
+
+    // 2. Regex se sirf JSON ko extract karna (extra text ignore ho jayega)
+    const jsonMatch = rawResult.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+        return jsonMatch[0]; // Yeh strictly valid JSON string return karega
+    }
+
+    // 3. Agar upar kuch kaam na aaye toh raw return kar do
+    return rawResult;
+
+  } catch (error) {
+    console.error(`Error calling API (attempt ${retryCount + 1}):`, error.response?.data || error.message);
+
     if (retryCount < maxRetries && (
       !error.response ||
       error.code === 'ECONNRESET' ||
@@ -85,34 +104,29 @@ ${command}
       error.response.status >= 500
     )) {
       console.log(`Retrying request... (${retryCount + 1}/${maxRetries})`);
-      await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); 
       return grokResponse(command, assistantName, userName, retryCount + 1);
     }
 
-    // Provide fallback JSON response for common errors
     if (error.response?.status === 429) {
-      // Rate limit exceeded
       return JSON.stringify({
         type: "general",
         userinput: command,
         response: "I'm receiving too many requests right now. Please try again in a moment."
       });
     } else if (error.response?.status === 401) {
-      // Invalid API key
       return JSON.stringify({
         type: "general",
         userinput: command,
         response: "There's an issue with my configuration. Please contact support."
       });
     } else if (error.response?.status >= 500) {
-      // Server error
       return JSON.stringify({
         type: "general",
         userinput: command,
         response: "I'm having trouble connecting to my brain right now. Please try again."
       });
     } else {
-      // Generic fallback
       return JSON.stringify({
         type: "general",
         userinput: command,
@@ -122,4 +136,4 @@ ${command}
   }
 }
 
-export default grokResponse
+export default grokResponse;
